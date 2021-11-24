@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class UserAdapter() : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
@@ -17,7 +18,11 @@ class UserAdapter() : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.avatarImageView.setImageResource(R.mipmap.ic_launcher)
+        Glide.with(holder.avatarImageView)
+            .load(userList[position].avatarUrl)
+            .circleCrop()
+            .placeholder(R.mipmap.ic_launcher)
+            .into(holder.avatarImageView)
         holder.userNameTextView.text = userList[position].userName
         holder.groupNameTextView.text = userList[position].groupName
     }
