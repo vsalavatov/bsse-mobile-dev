@@ -2,6 +2,7 @@ package com.vadimsalavatov.mobiledev
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -30,6 +31,15 @@ class OnboardingFragment : Fragment(R.layout.fragment_onboarding) {
         viewBinding.playerView.player = player
         viewBinding.viewPager.setTextPages()
         viewBinding.viewPager.attachDots(viewBinding.onboardingTextTabLayout)
+        viewBinding.signInButton.setOnClickListener {
+            // TODO: Go to SignInFragment.
+            Toast.makeText(requireContext(), "Нажата кнопка войти", Toast.LENGTH_SHORT).show()
+        }
+        viewBinding.signUpButton.setOnClickListener {
+            // TODO: Go to SignUpFragment.
+            Toast.makeText(requireContext(), "Нажата кнопка зарегистрироваться", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     override fun onResume() {
