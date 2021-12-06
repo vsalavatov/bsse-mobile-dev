@@ -74,4 +74,12 @@ dependencies {
     def exoPlayerVersion = "2.15.0"
     implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
     implementation "com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion"
+
+    // Logger.
+    implementation "com.jakewharton.timber:timber:4.7.1"
+
+    // Navigation.
+    def navigationVersion = "2.4.0-beta02"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 }
