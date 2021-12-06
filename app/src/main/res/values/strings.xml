@@ -10,4 +10,6 @@
     <string name="onboarding_view_pager_text_3">Добро пожаловать в команду</string>
     <string name="onboarding_sign_in_button_text">Войти</string>
     <string name="onboarding_sign_up_button_text">Зарегистрироваться</string>
+    <string name="sign_in_sign_in_button_text">Войти</string>
+    <string name="sign_up_sign_up_button_text">Зарегистрироваться</string>
 </resources>
