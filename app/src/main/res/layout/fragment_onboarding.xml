@@ -44,4 +44,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/playerView" />
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/onboardingTextTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/onboarding_dot_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPager"
+        app:tabBackground="@drawable/bg_onboarding_dot_normal"
+        app:tabGravity="center"
+        app:tabIndicator="@drawable/bg_onboarding_dot_indicator"
+        app:tabIndicatorColor="#000000"
+        app:tabIndicatorGravity="center"
+        app:tabMaxWidth="18dp"
+        app:tabMinWidth="18dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

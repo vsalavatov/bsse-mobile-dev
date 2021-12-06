@@ -9,6 +9,8 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.vadimsalavatov.mobiledev.databinding.FragmentOnboardingBinding
 
@@ -27,6 +29,7 @@ class OnboardingFragment : Fragment(R.layout.fragment_onboarding) {
         }
         viewBinding.playerView.player = player
         viewBinding.viewPager.setTextPages()
+        viewBinding.viewPager.attachDots(viewBinding.onboardingTextTabLayout)
     }
 
     override fun onResume() {
@@ -54,5 +57,9 @@ class OnboardingFragment : Fragment(R.layout.fragment_onboarding) {
                         getString(R.string.onboarding_view_pager_text_3)
                     )
             }
+    }
+
+    private fun ViewPager2.attachDots(tabLayout: TabLayout) {
+        TabLayoutMediator(tabLayout, this) { _, _ -> }.attach()
     }
 }
