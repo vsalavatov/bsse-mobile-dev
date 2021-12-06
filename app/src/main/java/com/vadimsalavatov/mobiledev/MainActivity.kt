@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val LOG_TAG = MainActivity::javaClass.name
     }
 
-    val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     private val viewBinding by viewBinding(ActivityMainBinding::bind)
 
