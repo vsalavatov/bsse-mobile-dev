@@ -1,4 +1,4 @@
-package com.vadimsalavatov.mobiledev
+package com.vadimsalavatov.mobiledev.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
@@ -7,6 +7,8 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentOnboardingBinding
 
 class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {

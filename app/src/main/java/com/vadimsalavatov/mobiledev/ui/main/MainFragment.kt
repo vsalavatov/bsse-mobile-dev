@@ -1,6 +1,9 @@
-package com.vadimsalavatov.mobiledev
+package com.vadimsalavatov.mobiledev.ui.main
 
 import androidx.fragment.app.viewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentMainBinding
 
 class MainFragment : BaseFragment(R.layout.fragment_main) {

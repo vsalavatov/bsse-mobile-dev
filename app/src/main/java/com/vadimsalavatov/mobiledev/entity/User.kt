@@ -1,4 +1,4 @@
-package com.vadimsalavatov.mobiledev
+package com.vadimsalavatov.mobiledev.entity
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

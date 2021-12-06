@@ -1,4 +1,4 @@
-package com.vadimsalavatov.mobiledev
+package com.vadimsalavatov.mobiledev.ui.userlist
 
 import android.os.Bundle
 import android.view.View
@@ -11,6 +11,8 @@ import com.vadimsalavatov.mobiledev.databinding.FragmentUserListBinding
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import androidx.fragment.app.viewModels
+import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import com.vadimsalavatov.mobiledev.R
 
 class UserListFragment : BaseFragment(R.layout.fragment_user_list) {
 

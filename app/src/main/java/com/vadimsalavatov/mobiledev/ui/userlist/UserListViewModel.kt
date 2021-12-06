@@ -1,7 +1,10 @@
-package com.vadimsalavatov.mobiledev
+package com.vadimsalavatov.mobiledev.ui.userlist
 
 import androidx.lifecycle.viewModelScope
 import com.squareup.moshi.Moshi
+import com.vadimsalavatov.mobiledev.data.network.Api
+import com.vadimsalavatov.mobiledev.entity.User
+import com.vadimsalavatov.mobiledev.ui.base.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
