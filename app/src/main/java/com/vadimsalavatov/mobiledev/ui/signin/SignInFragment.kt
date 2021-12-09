@@ -20,29 +20,12 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fun onBackPressed() {
-            val email = viewBinding.emailEditText.text?.toString()
-            val password = viewBinding.passwordEditText.text?.toString()
-            if (email.isNullOrBlank() && password.isNullOrBlank()) {
-                findNavController().popBackStack()
-                return
-            }
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.sign_in_back_alert_dialog_text)
-                .setNegativeButton(R.string.sign_in_back_alert_dialog_cancel_button_text) { dialog, _ ->
-                    dialog?.dismiss()
-                }
-                .setPositiveButton(R.string.sign_in_back_alert_dialog_ok_button_text) { _, _ ->
-                    findNavController().popBackStack()
-                }
-                .show()
-        }
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            onBackPressed()
+            onBackButtonPressed()
         }
         callback.isEnabled = true
         viewBinding.backButton.setOnClickListener {
-            onBackPressed()
+            onBackButtonPressed()
         }
         viewBinding.signInButton.setOnClickListener {
             viewModel.signIn(
@@ -74,5 +57,23 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
 
     private fun decideSignInButtonEnabledState(email: String?, password: String?) {
         viewBinding.signInButton.isEnabled = !(email.isNullOrBlank() || password.isNullOrBlank())
+    }
+
+    private fun onBackButtonPressed() {
+        val email = viewBinding.emailEditText.text?.toString()
+        val password = viewBinding.passwordEditText.text?.toString()
+        if (email.isNullOrBlank() && password.isNullOrBlank()) {
+            findNavController().popBackStack()
+            return
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.common_back_alert_dialog_text)
+            .setNegativeButton(R.string.common_back_alert_dialog_cancel_button_text) { dialog, _ ->
+                dialog?.dismiss()
+            }
+            .setPositiveButton(R.string.common_back_alert_dialog_ok_button_text) { _, _ ->
+                findNavController().popBackStack()
+            }
+            .show()
     }
 }
