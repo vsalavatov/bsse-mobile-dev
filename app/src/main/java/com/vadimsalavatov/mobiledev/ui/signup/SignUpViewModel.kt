@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 class SignUpViewModel : BaseViewModel() {
     fun signUp() {
         viewModelScope.launch {
-            AuthRepository.signIn()
+            AuthRepository.signIn(TODO(), TODO())
         }
     }
 }

@@ -7,7 +7,7 @@ object AuthRepository {
     private val _isAuthorizedFlow = MutableStateFlow(false)
     val isAuthorizedFlow = _isAuthorizedFlow.asStateFlow()
 
-    suspend fun signIn() {
+    suspend fun signIn(email: String, password: String) {
         _isAuthorizedFlow.emit(true)
     }
 
