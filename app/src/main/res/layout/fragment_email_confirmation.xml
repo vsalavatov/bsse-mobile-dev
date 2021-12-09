@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.vadimsalavatov.mobiledev.ui.emailconfirmation.VerificationCodeEditText
+        app:vcet_slotsCount="8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backButton"

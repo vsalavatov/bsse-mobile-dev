@@ -3,11 +3,16 @@ package com.vadimsalavatov.mobiledev.ui.emailconfirmation
 import android.content.Context
 import android.graphics.drawable.AnimationDrawable
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.view.isVisible
+import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.ViewVerificationCodeEditTextBinding
 import java.lang.Math.min
 
@@ -21,17 +26,77 @@ class VerificationCodeEditText @JvmOverloads constructor(
     private val viewBinding =
         ViewVerificationCodeEditTextBinding.inflate(LayoutInflater.from(context), this)
 
-    private val slotViews: List<VerificationCodeSlotView> =
-        listOf(
-            viewBinding.slot1,
-            viewBinding.slot2,
-            viewBinding.slot3,
-            viewBinding.slot4,
-            viewBinding.slot5,
-            viewBinding.slot6
-        )
+    private val slotsCount: Int = context
+        .theme
+        .obtainStyledAttributes(
+            attrs,
+            R.styleable.VerificationCodeEditText,
+            defStyleAttr,
+            defStyleRes
+        ).getInt(R.styleable.VerificationCodeEditText_vcet_slotsCount, 6)
 
-    private val slotValues: Array<CharSequence?> = Array(6) { null }
+    private val slotValues: Array<CharSequence?> = Array(slotsCount) { null }
+
+    private val slotViews: List<VerificationCodeSlotView>
+
+    init {
+        id = View.generateViewId()
+        viewBinding.realVerificationCodeEditText.filters += InputFilter.LengthFilter(slotsCount)
+        val views = mutableListOf<VerificationCodeSlotView>()
+        for (i in 0 until slotsCount) {
+            val slot = VerificationCodeSlotView(context).apply {
+                id = View.generateViewId()
+            }
+            views += slot
+        }
+        val constraints = ConstraintSet()
+        constraints.clone(this)
+        for (i in 0 until slotsCount) {
+            constraints.connect(
+                views[i].id,
+                ConstraintSet.BOTTOM,
+                viewBinding.realVerificationCodeEditText.id,
+                ConstraintSet.BOTTOM
+            )
+            if (i > 0 && i + 1 < slotsCount) {
+                constraints.addToHorizontalChain(views[i].id, views[i - 1].id, views[i + 1].id)
+                constraints.setHorizontalChainStyle(views[i].id, ConstraintSet.CHAIN_PACKED)
+            }
+            if (i == 0) {
+                constraints.connect(views[i].id, ConstraintSet.LEFT, id, ConstraintSet.LEFT)
+            } else {
+                constraints.connect(
+                    views[i].id,
+                    ConstraintSet.LEFT,
+                    views[i - 1].id,
+                    ConstraintSet.RIGHT,
+                    8
+                )
+            }
+            if (i + 1 < slotsCount) {
+                constraints.connect(
+                    views[i].id,
+                    ConstraintSet.RIGHT,
+                    views[i + 1].id,
+                    ConstraintSet.LEFT
+                )
+            } else {
+                constraints.connect(views[i].id, ConstraintSet.RIGHT, id, ConstraintSet.RIGHT)
+            }
+            constraints.connect(
+                views[i].id,
+                ConstraintSet.TOP,
+                viewBinding.realVerificationCodeEditText.id,
+                ConstraintSet.TOP
+            )
+            views[i].layoutParams = LayoutParams(R.dimen.verification_code_slot_width, R.dimen.verification_code_slot_height)
+            views[i].background =
+                getDrawable(context, R.drawable.selector_bg_verification_code_slot)
+            addView(views[i])
+        }
+        constraints.applyTo(this)
+        slotViews = views
+    }
 
     var onVerificationCodeFilledListener: (String) -> Unit = {}
 
@@ -44,10 +109,17 @@ class VerificationCodeEditText @JvmOverloads constructor(
 
                 private var wasClearedLastSlot = false
 
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    wasClearedLastSlot = !wasClearedLastSlot && start + before == slotViews.size && count == 0
+                    wasClearedLastSlot =
+                        !wasClearedLastSlot && start + before == slotViews.size && count == 0
                 }
 
                 override fun afterTextChanged(s: Editable) {
@@ -122,5 +194,7 @@ class VerificationCodeEditText @JvmOverloads constructor(
         all { it != null }
 
     private fun Array<CharSequence?>.toCodeString(): String =
-        joinToString(separator = "", prefix = "", postfix = "", limit = -1, truncated = "") { it ?: "" }
+        joinToString(separator = "", prefix = "", postfix = "", limit = -1, truncated = "") {
+            it ?: ""
+        }
 }
