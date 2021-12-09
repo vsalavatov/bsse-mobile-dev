@@ -24,8 +24,9 @@ import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentSignUpBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.util.getSpannedString
-import kotlinx.coroutines.flow.collect
+import dev.chrisbanes.insetter.applyInsetter
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
 class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     private val viewModel: SignUpViewModel by navGraphViewModels(R.id.signUpFragment)
@@ -39,6 +40,9 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
         callback.isEnabled = true
         viewBinding.backButton.setOnClickListener {
             onBackButtonPressed()
+        }
+        viewBinding.backButton.applyInsetter {
+            type(statusBars = true) { margin() }
         }
         viewBinding.signUpButton.setOnClickListener {
             viewModel.signUp(
@@ -56,6 +60,9 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
                     Uri.parse("https://policies.google.com/terms")
                 )
             )
+        }
+        viewBinding.signUpButton.applyInsetter {
+            type(navigationBars = true) { margin() }
         }
         subscribeToFormFields()
         subscribeToEvents()

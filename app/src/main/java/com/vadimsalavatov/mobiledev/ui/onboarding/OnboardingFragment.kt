@@ -16,6 +16,7 @@ import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentOnboardingBinding
 import com.vadimsalavatov.mobiledev.onboardingTextAdapterDelegate
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import dev.chrisbanes.insetter.applyInsetter
 
 class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
@@ -23,12 +24,22 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
     private var player: ExoPlayer? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         player = SimpleExoPlayer.Builder(requireContext()).build().apply {
             addMediaItem(MediaItem.fromUri("asset:///onboarding.mp4"))
             repeatMode = Player.REPEAT_MODE_ALL
             prepare()
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding.volumeControlButton.applyInsetter {
+            type(statusBars = true) { margin() }
+        }
+        viewBinding.signUpButton.applyInsetter {
+            type(navigationBars = true) { margin() }
         }
         viewBinding.playerView.player = player
         viewBinding.viewPager.setTextPages()

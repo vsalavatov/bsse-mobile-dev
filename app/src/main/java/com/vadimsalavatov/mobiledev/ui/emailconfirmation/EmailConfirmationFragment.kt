@@ -12,6 +12,7 @@ import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentEmailConfirmationBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.ui.signup.SignUpViewModel
+import dev.chrisbanes.insetter.applyInsetter
 
 class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmation) {
 
@@ -25,6 +26,9 @@ class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmat
         viewBinding.backButton.setOnClickListener {
             findNavController().popBackStack()
         }
+        viewBinding.backButton.applyInsetter {
+            type(statusBars = true) { margin() }
+        }
         viewBinding.confirmButton.setOnClickListener {
             val data = signUpViewModel.formData ?: error("sign up form is not filled")
             viewModel.confirmCode(
@@ -35,6 +39,9 @@ class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmat
                 data.password,
                 viewBinding.codeTextEdit.getCode()
             )
+        }
+        viewBinding.confirmButton.applyInsetter {
+            type(navigationBars = true) { margin() }
         }
         viewBinding.openMailAppButton.setOnClickListener {
             startActivity(

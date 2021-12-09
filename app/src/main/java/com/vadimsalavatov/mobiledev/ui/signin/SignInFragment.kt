@@ -11,6 +11,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentSignInBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import dev.chrisbanes.insetter.applyInsetter
 
 class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
 
@@ -27,11 +28,19 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
         viewBinding.backButton.setOnClickListener {
             onBackButtonPressed()
         }
+        viewBinding.backButton.applyInsetter {
+            type(statusBars = true) { margin() }
+        }
         viewBinding.signInButton.setOnClickListener {
             viewModel.signIn(
                 email = viewBinding.emailEditText.text?.toString() ?: "",
                 password = viewBinding.passwordEditText.text?.toString() ?: ""
             )
+        }
+        viewBinding.signInButton.applyInsetter {
+            type(navigationBars = true) {
+                margin()
+            }
         }
         subscribeToFormFields()
     }
