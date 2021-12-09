@@ -3,6 +3,9 @@ package com.vadimsalavatov.mobiledev.ui.signin
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import androidx.activity.addCallback
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -32,6 +35,13 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
                 email = viewBinding.emailEditText.text?.toString() ?: "",
                 password = viewBinding.passwordEditText.text?.toString() ?: ""
             )
+        }
+        viewBinding.mknLogoImageView.apply {
+            val rotation = RotateAnimation(0.0f, 360.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+            rotation.interpolator = LinearInterpolator()
+            rotation.duration = 10_000
+            rotation.repeatCount = Animation.INFINITE
+            startAnimation(rotation)
         }
         subscribeToFormFields()
     }
