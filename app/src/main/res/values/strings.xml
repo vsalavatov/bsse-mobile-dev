@@ -26,4 +26,6 @@
     <string name="sign_up_under_email_text">Будет видно только вам</string>
     <string name="sign_up_email_text_layout_hint">Почта</string>
     <string name="sign_up_password_text_layout_hint">Пароль</string>
+    <string name="email_confirmation_code_is_sent_text">Код подтверджения выслан вам на почту</string>
+    <string name="email_confirmation_confirm_code_button_text">Подтвердить</string>
 </resources>

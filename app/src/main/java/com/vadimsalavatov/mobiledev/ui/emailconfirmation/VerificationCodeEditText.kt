@@ -26,7 +26,7 @@ class VerificationCodeEditText @JvmOverloads constructor(
     private val viewBinding =
         ViewVerificationCodeEditTextBinding.inflate(LayoutInflater.from(context), this)
 
-    private val slotsCount: Int = context
+    val slotsCount: Int = context
         .theme
         .obtainStyledAttributes(
             attrs,
@@ -40,7 +40,9 @@ class VerificationCodeEditText @JvmOverloads constructor(
     private val slotViews: List<VerificationCodeSlotView>
 
     init {
-        id = View.generateViewId()
+        if (id == NO_ID) {
+            id = View.generateViewId()
+        }
         viewBinding.realVerificationCodeEditText.filters += InputFilter.LengthFilter(slotsCount)
         val views = mutableListOf<VerificationCodeSlotView>()
         for (i in 0 until slotsCount) {
@@ -89,7 +91,10 @@ class VerificationCodeEditText @JvmOverloads constructor(
                 viewBinding.realVerificationCodeEditText.id,
                 ConstraintSet.TOP
             )
-            views[i].layoutParams = LayoutParams(R.dimen.verification_code_slot_width, R.dimen.verification_code_slot_height)
+            views[i].layoutParams = LayoutParams(
+                R.dimen.verification_code_slot_width,
+                R.dimen.verification_code_slot_height
+            )
             views[i].background =
                 getDrawable(context, R.drawable.selector_bg_verification_code_slot)
             addView(views[i])

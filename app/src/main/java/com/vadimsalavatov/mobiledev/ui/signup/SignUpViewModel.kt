@@ -1,7 +1,6 @@
 package com.vadimsalavatov.mobiledev.ui.signup
 
 import androidx.lifecycle.viewModelScope
-import com.vadimsalavatov.mobiledev.repository.AuthRepository
 import com.vadimsalavatov.mobiledev.ui.base.BaseViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +10,8 @@ import kotlinx.coroutines.launch
 class SignUpViewModel : BaseViewModel() {
 
     private val _eventChannel = Channel<Event>(Channel.BUFFERED)
-    
+    var formData: SignUpFormData? = null
+
     fun eventsFlow(): Flow<Event> {
         return _eventChannel.receiveAsFlow()
     }
@@ -25,13 +25,7 @@ class SignUpViewModel : BaseViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                AuthRepository.signUp(
-                    firstname,
-                    lastname,
-                    nickname,
-                    email,
-                    password
-                )
+                formData = SignUpFormData(firstname, lastname, nickname, email, password)
                 _eventChannel.send(Event.SignUpEmailConfirmationRequired)
             } catch (error: Exception) {
                 _eventChannel.send(Event.SignUpEmailConfirmationRequired)
@@ -43,4 +37,12 @@ class SignUpViewModel : BaseViewModel() {
         object SignUpSuccess : Event()
         object SignUpEmailConfirmationRequired : Event()
     }
+
+    data class SignUpFormData(
+        val firstname: String,
+        val lastname: String,
+        val nickname: String,
+        val email: String,
+        val password: String
+    )
 }

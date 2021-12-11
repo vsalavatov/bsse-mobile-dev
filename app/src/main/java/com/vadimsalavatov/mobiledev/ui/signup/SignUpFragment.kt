@@ -3,7 +3,6 @@ package com.vadimsalavatov.mobiledev.ui.signup
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextPaint
@@ -15,21 +14,21 @@ import android.widget.CheckBox
 import androidx.activity.addCallback
 import androidx.core.text.buildSpannedString
 import androidx.core.text.inSpans
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentSignUpBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.util.getSpannedString
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
-    private val viewModel: SignUpViewModel by viewModels()
+    private val viewModel: SignUpViewModel by navGraphViewModels(R.id.signUpFragment)
     private val viewBinding by viewBinding(FragmentSignUpBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,7 +50,12 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
             )
         }
         viewBinding.termsAndConditionsCheckBox.setClubRulesText {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://policies.google.com/terms")))
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://policies.google.com/terms")
+                )
+            )
         }
         subscribeToFormFields()
         subscribeToEvents()
@@ -67,8 +71,8 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
             termsIsChecked = viewBinding.termsAndConditionsCheckBox.isChecked
         )
         val watcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 decideSignUpButtonEnabledState(
                     firstname = viewBinding.firstnameEditText.text?.toString(),
@@ -145,7 +149,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
                 viewModel.eventsFlow().collect { event ->
                     when (event) {
                         is SignUpViewModel.Event.SignUpEmailConfirmationRequired -> {
-                            findNavController().navigate(R.id.emailConfirmationFragment)
+                            findNavController().navigate(R.id.action_signUpFragment_to_emailConfirmationFragment)
                         }
                         else -> {
                             // Do nothing.
