@@ -40,9 +40,6 @@ class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmat
                 viewBinding.codeTextEdit.getCode()
             )
         }
-        viewBinding.confirmButton.applyInsetter {
-            type(navigationBars = true) { margin() }
-        }
         viewBinding.openMailAppButton.setOnClickListener {
             startActivity(
                 Intent(
@@ -52,6 +49,9 @@ class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmat
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
             )
+        }
+        viewBinding.openMailAppButton.applyInsetter {
+            type(navigationBars = true) { margin() }
         }
         subscribeToFormFields()
     }
