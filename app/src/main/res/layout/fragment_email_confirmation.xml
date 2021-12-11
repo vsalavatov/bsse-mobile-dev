@@ -6,12 +6,7 @@
 
     <ImageButton
         android:id="@+id/backButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_arrow_back_black_24dp"
+        style="@style/Widget.MobileDevCourse.Button.Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,10 +25,10 @@
 
     <com.vadimsalavatov.mobiledev.ui.emailconfirmation.VerificationCodeEditText
         android:id="@+id/codeTextEdit"
+        style="@style/Widget.MobileDevCourse.VerificationCodeEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:paddingHorizontal="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/codeIsSentText"
@@ -41,6 +36,7 @@
 
     <Button
         android:id="@+id/confirmButton"
+        style="@style/Widget.MobileDevCourse.Button.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
