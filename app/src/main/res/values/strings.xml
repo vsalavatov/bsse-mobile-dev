@@ -28,4 +28,5 @@
     <string name="sign_up_password_text_layout_hint">Пароль</string>
     <string name="email_confirmation_code_is_sent_text">Код подтверджения выслан вам на почту</string>
     <string name="email_confirmation_confirm_code_button_text">Подтвердить</string>
+    <string name="email_confirmation_open_mail_app_button_text">Открыть почту</string>
 </resources>

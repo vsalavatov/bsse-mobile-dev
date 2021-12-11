@@ -1,5 +1,7 @@
 package com.vadimsalavatov.mobiledev.ui.emailconfirmation
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -32,6 +34,16 @@ class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmat
                 data.email,
                 data.password,
                 viewBinding.codeTextEdit.getCode()
+            )
+        }
+        viewBinding.openMailAppButton.setOnClickListener {
+            startActivity(
+                Intent(
+                    Intent.ACTION_MAIN
+                ).apply {
+                    addCategory(Intent.CATEGORY_APP_EMAIL)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
             )
         }
         subscribeToFormFields()
