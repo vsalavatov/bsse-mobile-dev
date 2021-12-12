@@ -9,7 +9,6 @@ import com.vadimsalavatov.mobiledev.logFragmentHierarchy
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-@AndroidEntryPoint
 open class BaseFragment : Fragment {
     constructor(): super()
     constructor(@LayoutRes contentLayoutId: Int): super(contentLayoutId)

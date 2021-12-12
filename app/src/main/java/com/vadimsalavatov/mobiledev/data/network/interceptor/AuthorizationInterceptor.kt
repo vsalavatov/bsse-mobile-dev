@@ -1,6 +1,6 @@
 package com.vadimsalavatov.mobiledev.data.network.interceptor
 
-import AuthRepository
+import com.vadimsalavatov.mobiledev.repository.AuthRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

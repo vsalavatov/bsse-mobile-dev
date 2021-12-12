@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.vadimsalavatov.mobiledev.data.network.response.error.SignInWithEmailErrorResponse
 import com.vadimsalavatov.mobiledev.interactor.AuthInteractor
+import com.vadimsalavatov.mobiledev.interactor.RegisterWithEmailInteractor
 import com.vadimsalavatov.mobiledev.repository.AuthRepository
 import com.vadimsalavatov.mobiledev.ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val authInteractor: AuthInteractor
+    private val authInteractor: AuthInteractor,
 ) : BaseViewModel() {
 
     private val _signInActionStateFlow = MutableStateFlow<SignInActionState>(SignInActionState.Pending)

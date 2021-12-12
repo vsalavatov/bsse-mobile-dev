@@ -1,7 +1,7 @@
 package com.vadimsalavatov.mobiledev.data.network.interceptor
 
-import AuthRepository
 import com.haroldadmin.cnradapter.NetworkResponse
+import com.vadimsalavatov.mobiledev.repository.AuthRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
@@ -9,6 +9,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
 import timber.log.Timber
+
 
 class AppAuthenticator(
     private val authRepository: AuthRepository

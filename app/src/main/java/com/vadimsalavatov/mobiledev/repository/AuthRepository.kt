@@ -22,8 +22,8 @@ import dagger.Lazy
 class AuthRepository @Inject constructor(
     private val apiLazy: Lazy<Api>,
     private val localKeyValueStorage: LocalKeyValueStorage,
-    @AppCoroutineScope externalCoroutineScope: CoroutineScope,
-    @IoCoroutineDispatcher private val ioDispatcher: CoroutineDispatcher
+    externalCoroutineScope: CoroutineScope,
+    private val ioDispatcher: CoroutineDispatcher
 ) {
     private val api by lazy { apiLazy.get() }
 
