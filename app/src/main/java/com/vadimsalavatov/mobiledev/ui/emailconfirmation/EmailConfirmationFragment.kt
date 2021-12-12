@@ -12,8 +12,10 @@ import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentEmailConfirmationBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.ui.signup.SignUpViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
 
+@AndroidEntryPoint
 class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmation) {
 
     private val viewBinding by viewBinding(FragmentEmailConfirmationBinding::bind)

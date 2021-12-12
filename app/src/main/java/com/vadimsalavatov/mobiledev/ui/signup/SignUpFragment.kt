@@ -24,10 +24,12 @@ import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentSignUpBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.util.getSpannedString
+import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
 
+@AndroidEntryPoint
 class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     private val viewModel: SignUpViewModel by navGraphViewModels(R.id.signUpFragment)
     private val viewBinding by viewBinding(FragmentSignUpBinding::bind)

@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 import androidx.fragment.app.viewModels
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class UserListFragment : BaseFragment(R.layout.fragment_user_list) {
 
     private val viewModel: UserListViewModel by viewModels()

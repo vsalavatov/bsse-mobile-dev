@@ -5,7 +5,9 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentLikesBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LikesFragment : BaseFragment(R.layout.fragment_likes) {
 
     private val viewBinding by viewBinding(FragmentLikesBinding::bind)

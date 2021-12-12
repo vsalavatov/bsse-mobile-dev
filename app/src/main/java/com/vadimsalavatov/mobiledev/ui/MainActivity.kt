@@ -12,9 +12,11 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.ActivityMainBinding
 import com.vadimsalavatov.mobiledev.ui.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val viewBinding by viewBinding(ActivityMainBinding::bind)
@@ -30,7 +32,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun subscribeToAuthorizationStatus() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isAuthorizedFlow.collect {
+                viewModel.isAuthorizedFlow().collect {
                     showSuitableNavigationFlow(it)
                 }
             }

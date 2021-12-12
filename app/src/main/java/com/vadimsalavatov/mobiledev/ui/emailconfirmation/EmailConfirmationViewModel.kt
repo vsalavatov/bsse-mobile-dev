@@ -1,11 +1,15 @@
 package com.vadimsalavatov.mobiledev.ui.emailconfirmation
 
 import androidx.lifecycle.viewModelScope
+import com.vadimsalavatov.mobiledev.interactor.AuthInteractor
 import com.vadimsalavatov.mobiledev.repository.AuthRepository
 import com.vadimsalavatov.mobiledev.ui.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EmailConfirmationViewModel : BaseViewModel() {
+@HiltViewModel
+class EmailConfirmationViewModel @Inject constructor(private val authInteractor: AuthInteractor) : BaseViewModel() {
     fun confirmCode(
         firstname: String,
         lastname: String,
@@ -16,8 +20,7 @@ class EmailConfirmationViewModel : BaseViewModel() {
     ) {
         viewModelScope.launch {
             try {
-                // Timber.d("FORM DATA: $firstname $lastname $nickname $email $password $code")
-                AuthRepository.signUp(
+                authInteractor.signUp(
                     firstname,
                     lastname,
                     nickname,

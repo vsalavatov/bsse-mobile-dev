@@ -2,11 +2,13 @@ package com.vadimsalavatov.mobiledev.ui.signup
 
 import androidx.lifecycle.viewModelScope
 import com.vadimsalavatov.mobiledev.ui.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
+@HiltViewModel
 class SignUpViewModel : BaseViewModel() {
 
     private val _eventChannel = Channel<Event>(Channel.BUFFERED)
