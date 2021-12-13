@@ -68,7 +68,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
     private fun Boolean.asFloat(): Float = if (this) 1f else 0f
 
-    private suspend fun setVolumeControlButtonResource(state: Boolean) {
+    private fun setVolumeControlButtonResource(state: Boolean) {
         if (state) {
             viewBinding.volumeControlButton.setImageResource(R.drawable.ic_volume_up_white_24dp)
         } else {

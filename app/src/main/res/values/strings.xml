@@ -32,4 +32,6 @@
     <string name="error_network_error_text">Ошибка сети</string>
     <string name="error_server_error_text">Ошибка сервера</string>
     <string name="error_unknown_error_text">Неизвестная ошибка</string>
+    <string name="email_confirmation_send_code_again_button_text">Выслать код повторно</string>
+    <string name="email_confirmation_send_code_again_hint_template">Подождите %s</string>
 </resources>

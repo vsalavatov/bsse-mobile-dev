@@ -1,5 +1,6 @@
 package com.vadimsalavatov.mobiledev.ui.emailconfirmation
 
+import android.os.CountDownTimer
 import androidx.lifecycle.viewModelScope
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.vadimsalavatov.mobiledev.data.network.response.error.CreateProfileErrorResponse
@@ -32,10 +33,28 @@ class EmailConfirmationViewModel @Inject constructor(
         return _emailConfirmationActionStateFlow.asStateFlow()
     }
 
+    private val SEND_AGAIN_TIMEOUT_SECONDS = 15L
+    private var sendAgainTimer: CountDownTimer? = null
+    private val _timerStateFlow = MutableStateFlow(0L)
+    val timerStateFlow = _timerStateFlow.asStateFlow()
+
     suspend fun sendVerificationCode(email: String) {
         _emailConfirmationActionStateFlow.emit(EmailConfirmationActionState.Loading)
         when (val response = registerWithEmailInteractor.sendVerificationCode(email)) {
             is NetworkResponse.Success -> {
+                sendAgainTimer?.cancel()
+                sendAgainTimer = object : CountDownTimer(SEND_AGAIN_TIMEOUT_SECONDS * 1000, 200L) {
+                    override fun onTick(leftMs: Long) {
+                        viewModelScope.launch {
+                            _timerStateFlow.emit(leftMs)
+                        }
+                    }
+                    override fun onFinish() {
+                        viewModelScope.launch {
+                            _timerStateFlow.emit(0)
+                        }
+                    }
+                }.start()
                 _emailConfirmationActionStateFlow.emit(EmailConfirmationActionState.Pending)
             }
             is NetworkResponse.ServerError -> {
