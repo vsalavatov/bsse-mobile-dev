@@ -2,6 +2,8 @@ package com.vadimsalavatov.mobiledev.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -18,11 +20,14 @@ import com.vadimsalavatov.mobiledev.onboardingTextAdapterDelegate
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
     private val viewBinding by viewBinding(FragmentOnboardingBinding::bind)
+    private val viewModel: OnboardingViewModel by viewModels()
 
     private var player: ExoPlayer? = null
 
@@ -32,6 +37,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             addMediaItem(MediaItem.fromUri("asset:///onboarding.mp4"))
             repeatMode = Player.REPEAT_MODE_ALL
             prepare()
+            volume = 0f // disable sound by default
         }
     }
 
@@ -52,7 +58,29 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
         viewBinding.signUpButton.setOnClickListener {
             findNavController().navigate(R.id.action_onboardingFragment_to_signUpFragment)
         }
+        subscribeToVolumeEvents()
+    }
 
+    private fun Boolean.asFloat(): Float = if (this) 1f else 0f
+
+    private suspend fun setVolumeControlButtonResource(state: Boolean) {
+        if (state) {
+            viewBinding.volumeControlButton.setImageResource(R.drawable.ic_volume_up_white_24dp)
+        } else {
+            viewBinding.volumeControlButton.setImageResource(R.drawable.ic_volume_off_white_24dp)
+        }
+    }
+
+    private fun subscribeToVolumeEvents() {
+        viewModel.viewModelScope.launch {
+            viewModel.videoSoundState().collect { state ->
+                player?.volume = state.asFloat()
+                setVolumeControlButtonResource(state)
+            }
+        }
+        viewBinding.volumeControlButton.setOnClickListener {
+            viewModel.toggleVideoSound()
+        }
     }
 
     override fun onResume() {
