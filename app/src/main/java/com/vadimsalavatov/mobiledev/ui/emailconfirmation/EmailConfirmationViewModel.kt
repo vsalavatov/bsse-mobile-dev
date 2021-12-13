@@ -1,12 +1,68 @@
 package com.vadimsalavatov.mobiledev.ui.emailconfirmation
 
 import androidx.lifecycle.viewModelScope
-import com.vadimsalavatov.mobiledev.repository.AuthRepository
+import com.haroldadmin.cnradapter.NetworkResponse
+import com.vadimsalavatov.mobiledev.data.network.response.error.CreateProfileErrorResponse
+import com.vadimsalavatov.mobiledev.data.network.response.error.SendRegistrationVerificationCodeErrorResponse
+import com.vadimsalavatov.mobiledev.data.network.response.error.VerifyRegistrationCodeErrorResponse
+import com.vadimsalavatov.mobiledev.interactor.AuthInteractor
+import com.vadimsalavatov.mobiledev.interactor.RegisterWithEmailInteractor
 import com.vadimsalavatov.mobiledev.ui.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
-class EmailConfirmationViewModel : BaseViewModel() {
-    fun confirmCode(
+@HiltViewModel
+class EmailConfirmationViewModel @Inject constructor(
+    private val authInteractor: AuthInteractor,
+    private val registerWithEmailInteractor: RegisterWithEmailInteractor
+) :
+    BaseViewModel() {
+
+    private val _emailConfirmationActionStateFlow =
+        MutableStateFlow<EmailConfirmationViewModel.EmailConfirmationActionState>(
+            EmailConfirmationViewModel.EmailConfirmationActionState.Pending
+        )
+
+    fun emailConfirmationActionStateFlow(): Flow<EmailConfirmationViewModel.EmailConfirmationActionState> {
+        return _emailConfirmationActionStateFlow.asStateFlow()
+    }
+
+    suspend fun sendVerificationCode(email: String) {
+        _emailConfirmationActionStateFlow.emit(EmailConfirmationActionState.Loading)
+        when (val response = registerWithEmailInteractor.sendVerificationCode(email)) {
+            is NetworkResponse.Success -> {
+                _emailConfirmationActionStateFlow.emit(EmailConfirmationActionState.Pending)
+            }
+            is NetworkResponse.ServerError -> {
+                _emailConfirmationActionStateFlow.emit(
+                    EmailConfirmationActionState.SendVerificationCodeError(
+                        response
+                    )
+                )
+            }
+            is NetworkResponse.NetworkError -> {
+                _emailConfirmationActionStateFlow.emit(
+                    EmailConfirmationActionState.NetworkError(
+                        response
+                    )
+                )
+            }
+            is NetworkResponse.UnknownError -> {
+                _emailConfirmationActionStateFlow.emit(
+                    EmailConfirmationActionState.UnknownError(
+                        response
+                    )
+                )
+            }
+        }
+    }
+
+    fun signUpWithCode(
         firstname: String,
         lastname: String,
         nickname: String,
@@ -15,18 +71,98 @@ class EmailConfirmationViewModel : BaseViewModel() {
         code: String
     ) {
         viewModelScope.launch {
+            _emailConfirmationActionStateFlow.emit(EmailConfirmationActionState.Loading)
             try {
-                // Timber.d("FORM DATA: $firstname $lastname $nickname $email $password $code")
-                AuthRepository.signUp(
+                val verificationToken: String
+                when (val result = registerWithEmailInteractor.verifyEmail(email, code)) {
+                    is NetworkResponse.Success -> {
+                        verificationToken = result.body.verificationToken
+                    }
+                    is NetworkResponse.ServerError -> {
+                        _emailConfirmationActionStateFlow.emit(
+                            EmailConfirmationActionState.EmailVerificationError(
+                                result
+                            )
+                        )
+                        return@launch
+                    }
+                    is NetworkResponse.NetworkError -> {
+                        _emailConfirmationActionStateFlow.emit(
+                            EmailConfirmationActionState.NetworkError(
+                                result
+                            )
+                        )
+                        return@launch
+                    }
+                    is NetworkResponse.UnknownError -> {
+                        _emailConfirmationActionStateFlow.emit(
+                            EmailConfirmationActionState.UnknownError(
+                                result
+                            )
+                        )
+                        return@launch
+                    }
+                }
+                when (val result = authInteractor.signUpWithEmailAndPersonalInfoAndVerificationCode(
                     firstname,
                     lastname,
                     nickname,
                     email,
                     password,
-                    code
+                    verificationToken
+                )) {
+                    is NetworkResponse.Success -> {
+                        _emailConfirmationActionStateFlow.emit(EmailConfirmationActionState.Pending)
+                    }
+                    is NetworkResponse.ServerError -> {
+                        _emailConfirmationActionStateFlow.emit(
+                            EmailConfirmationActionState.ServerError(
+                                result
+                            )
+                        )
+                    }
+                    is NetworkResponse.NetworkError -> {
+                        _emailConfirmationActionStateFlow.emit(
+                            EmailConfirmationActionState.NetworkError(
+                                result
+                            )
+                        )
+                    }
+                    is NetworkResponse.UnknownError -> {
+                        _emailConfirmationActionStateFlow.emit(
+                            EmailConfirmationActionState.UnknownError(
+                                result
+                            )
+                        )
+                    }
+                }
+            } catch (error: Throwable) {
+                Timber.e(error)
+                _emailConfirmationActionStateFlow.emit(
+                    EmailConfirmationActionState.UnknownError(
+                        NetworkResponse.UnknownError(error)
+                    )
                 )
-            } catch (error: Exception) {
             }
         }
+    }
+
+    sealed class EmailConfirmationActionState {
+        object Pending : EmailConfirmationActionState()
+        object Loading : EmailConfirmationActionState()
+        data class ServerError(val e: NetworkResponse.ServerError<CreateProfileErrorResponse>) :
+            EmailConfirmationActionState()
+
+        data class SendVerificationCodeError(val e: NetworkResponse.ServerError<SendRegistrationVerificationCodeErrorResponse>) :
+            EmailConfirmationActionState()
+
+        data class EmailVerificationError(val e: NetworkResponse.ServerError<VerifyRegistrationCodeErrorResponse>) :
+            EmailConfirmationActionState()
+
+        data class NetworkError(val e: NetworkResponse.NetworkError) :
+            EmailConfirmationActionState()
+
+        data class UnknownError(val e: NetworkResponse.UnknownError) :
+            EmailConfirmationActionState()
     }
 }

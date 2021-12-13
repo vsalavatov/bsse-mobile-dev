@@ -6,6 +6,7 @@ import androidx.navigation.fragment.findNavController
 import com.vadimsalavatov.mobiledev.BuildConfig
 import com.vadimsalavatov.mobiledev.logBackstack
 import com.vadimsalavatov.mobiledev.logFragmentHierarchy
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 open class BaseFragment : Fragment {

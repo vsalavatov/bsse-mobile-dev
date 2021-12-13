@@ -6,16 +6,28 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
+import com.haroldadmin.cnradapter.NetworkResponse
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentSignInBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import com.vadimsalavatov.mobiledev.ui.signup.SignUpViewModel
+import com.vadimsalavatov.mobiledev.util.showAsToast
+import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlin.reflect.typeOf
 
+@AndroidEntryPoint
 class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
 
     private val viewBinding by viewBinding(FragmentSignInBinding::bind)
@@ -53,6 +65,7 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
             startAnimation(rotation)
         }
         subscribeToFormFields()
+        subscribeToEvents()
     }
 
     private fun subscribeToFormFields() {
@@ -94,5 +107,22 @@ class SignInFragment : BaseFragment(R.layout.fragment_sign_in) {
                 findNavController().popBackStack()
             }
             .show()
+    }
+
+    private fun subscribeToEvents() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.signInActionStateFlow().collect { event ->
+                    when (event) {
+                        is SignInViewModel.SignInActionState.NetworkError -> event.e.showAsToast(requireContext())
+                        is SignInViewModel.SignInActionState.ServerError -> event.e.showAsToast(requireContext())
+                        is SignInViewModel.SignInActionState.UnknownError -> event.e.showAsToast(requireContext())
+                        else -> {
+                            // Do nothing.
+                        }
+                    }
+                }
+            }
+        }
     }
 }

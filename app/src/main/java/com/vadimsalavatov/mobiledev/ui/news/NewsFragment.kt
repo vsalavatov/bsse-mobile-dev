@@ -5,7 +5,9 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentNewsBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NewsFragment : BaseFragment(R.layout.fragment_news) {
 
     private val viewBinding by viewBinding(FragmentNewsBinding::bind)

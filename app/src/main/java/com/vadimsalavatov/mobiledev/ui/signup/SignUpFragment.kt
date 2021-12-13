@@ -11,9 +11,13 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.CheckBox
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.text.buildSpannedString
 import androidx.core.text.inSpans
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,12 +28,16 @@ import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentSignUpBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.util.getSpannedString
+import com.vadimsalavatov.mobiledev.util.showAsToast
+import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 
+@AndroidEntryPoint
 class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
-    private val viewModel: SignUpViewModel by navGraphViewModels(R.id.signUpFragment)
+    private val viewModel: SignUpViewModel by hiltNavGraphViewModels(R.id.signUpFragment)
     private val viewBinding by viewBinding(FragmentSignUpBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -153,16 +161,22 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
     private fun subscribeToEvents() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.eventsFlow().collect { event ->
+                Timber.d("sub events")
+                viewModel.signUpActionStateFlow().collect { event ->
+                    Timber.d("sign up event: $event")
                     when (event) {
                         is SignUpViewModel.Event.SignUpEmailConfirmationRequired -> {
                             findNavController().navigate(R.id.action_signUpFragment_to_emailConfirmationFragment)
                         }
-                        else -> {
-                            // Do nothing.
+                        is SignUpViewModel.Event.SignUpNetworkError -> event.e.showAsToast(requireContext())
+                        is SignUpViewModel.Event.SignUpServerError -> event.e.showAsToast(requireContext())
+                        is SignUpViewModel.Event.SignUpUnknownError -> event.e.showAsToast(requireContext())
+                        is SignUpViewModel.Event.SignUpPending -> {
+                             // nothing
                         }
                     }
                 }
+                Timber.d("sub events 2")
             }
         }
     }
