@@ -21,12 +21,10 @@ import javax.inject.Inject
 class SignUpViewModel @Inject constructor() :
     BaseViewModel() {
 
-    private val _signUpActionStateFlow = MutableStateFlow<SignUpViewModel.Event>(
-        SignUpViewModel.Event.SignUpPending)
+    private val _signUpActionStateFlow = Channel<SignUpViewModel.Event>(1)
 
-    fun signUpActionStateFlow(): Flow<SignUpViewModel.Event> {
-        Timber.d("sign up view model action flow")
-        return _signUpActionStateFlow.asStateFlow()
+    fun signUpActionFlow(): Flow<SignUpViewModel.Event> {
+        return _signUpActionStateFlow.receiveAsFlow()
     }
 
     var formData: SignUpFormData? = null
@@ -41,10 +39,10 @@ class SignUpViewModel @Inject constructor() :
         viewModelScope.launch {
             try {
                 formData = SignUpFormData(firstname, lastname, nickname, email, password)
-                _signUpActionStateFlow.emit(Event.SignUpEmailConfirmationRequired)
+                _signUpActionStateFlow.send(Event.SignUpEmailConfirmationRequired)
             } catch (error: Throwable) {
                 Timber.e(error)
-                _signUpActionStateFlow.emit(Event.SignUpUnknownError(NetworkResponse.UnknownError(error)))
+                _signUpActionStateFlow.send(Event.SignUpUnknownError(NetworkResponse.UnknownError(error)))
             }
         }
     }

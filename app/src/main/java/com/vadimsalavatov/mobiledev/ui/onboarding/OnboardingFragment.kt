@@ -3,6 +3,9 @@ package com.vadimsalavatov.mobiledev.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
@@ -74,10 +77,12 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     }
 
     private fun subscribeToVolumeEvents() {
-        viewModel.viewModelScope.launch {
-            viewModel.videoSoundState().collect { state ->
-                player?.volume = state.asFloat()
-                setVolumeControlButtonResource(state)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.videoSoundState().collect { state ->
+                    player?.volume = state.asFloat()
+                    setVolumeControlButtonResource(state)
+                }
             }
         }
         viewBinding.volumeControlButton.setOnClickListener {
@@ -86,14 +91,20 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
     }
 
     private fun subscribeToAutoscrollNotifier() {
-        viewModel.viewModelScope.launch {
-            viewModel.autoscrollFlow.drop(1).collect {
-                val currentItem = viewBinding.viewPager.currentItem
-                val totalItems = viewBinding.viewPager.adapter!!.itemCount
-                viewBinding.viewPager.setCurrentItem((currentItem + 1) % totalItems, true)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.autoscrollFlow.drop(1).collect {
+                        val currentItem = viewBinding.viewPager.currentItem
+                        val totalItems = viewBinding.viewPager.adapter!!.itemCount
+                        viewBinding.viewPager.setCurrentItem((currentItem + 1) % totalItems, true)
+                    }
+                }
+                launch {
+                    viewModel.startAutoscrollNotifier()
+                }
             }
         }
-        viewModel.viewModelScope.launch { viewModel.startAutoscrollNotifier() }
         viewBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrolled(
                 position: Int,
