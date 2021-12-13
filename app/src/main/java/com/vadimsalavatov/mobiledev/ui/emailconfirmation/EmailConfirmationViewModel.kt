@@ -1,6 +1,7 @@
 package com.vadimsalavatov.mobiledev.ui.emailconfirmation
 
 import android.os.CountDownTimer
+import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.vadimsalavatov.mobiledev.data.network.response.error.CreateProfileErrorResponse
