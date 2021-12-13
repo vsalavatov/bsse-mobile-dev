@@ -21,6 +21,7 @@ import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -59,6 +60,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             findNavController().navigate(R.id.action_onboardingFragment_to_signUpFragment)
         }
         subscribeToVolumeEvents()
+        subscribeToAutoscrollNotifier()
     }
 
     private fun Boolean.asFloat(): Float = if (this) 1f else 0f
@@ -81,6 +83,27 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
         viewBinding.volumeControlButton.setOnClickListener {
             viewModel.toggleVideoSound()
         }
+    }
+
+    private fun subscribeToAutoscrollNotifier() {
+        viewModel.viewModelScope.launch {
+            viewModel.autoscrollFlow.drop(1).collect {
+                val currentItem = viewBinding.viewPager.currentItem
+                val totalItems = viewBinding.viewPager.adapter!!.itemCount
+                viewBinding.viewPager.setCurrentItem((currentItem + 1) % totalItems, true)
+            }
+        }
+        viewModel.viewModelScope.launch { viewModel.startAutoscrollNotifier() }
+        viewBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                viewModel.registerInteraction(System.currentTimeMillis())
+            }
+        })
     }
 
     override fun onResume() {

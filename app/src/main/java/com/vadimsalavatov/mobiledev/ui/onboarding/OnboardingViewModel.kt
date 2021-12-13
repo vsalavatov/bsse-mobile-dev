@@ -1,5 +1,6 @@
 package com.vadimsalavatov.mobiledev.ui.onboarding
 
+import android.os.SystemClock
 import androidx.lifecycle.viewModelScope
 import com.vadimsalavatov.mobiledev.data.persistent.LocalKeyValueStorage
 import com.vadimsalavatov.mobiledev.di.AppCoroutineScope
@@ -9,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +36,25 @@ class OnboardingViewModel @Inject constructor(
                 localKeyValueStorage.onboardingVideoSoundEnabled = newState
             }
             _videoSoundState.await().emit(newState)
+        }
+    }
+
+    private val _autoscrollFlow = MutableStateFlow<Long>(0)
+    val autoscrollFlow = _autoscrollFlow.asStateFlow()
+    private val IDLE_PERIOD: Long = 4000
+    private var lastInteraction: Long = System.currentTimeMillis()
+
+    fun registerInteraction(timestamp: Long) {
+        lastInteraction = timestamp
+    }
+
+    suspend fun startAutoscrollNotifier() {
+        while (true) {
+            if (lastInteraction + IDLE_PERIOD < System.currentTimeMillis()) {
+                lastInteraction = System.currentTimeMillis()
+                _autoscrollFlow.emit(lastInteraction)
+            }
+            delay(50)
         }
     }
 }
