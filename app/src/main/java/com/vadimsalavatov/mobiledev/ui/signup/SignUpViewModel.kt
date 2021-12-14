@@ -1,20 +1,33 @@
 package com.vadimsalavatov.mobiledev.ui.signup
 
 import androidx.lifecycle.viewModelScope
+import com.haroldadmin.cnradapter.NetworkResponse
+import com.vadimsalavatov.mobiledev.data.network.response.error.SendRegistrationVerificationCodeErrorResponse
+import com.vadimsalavatov.mobiledev.interactor.RegisterWithEmailInteractor
+import com.vadimsalavatov.mobiledev.repository.VerificationCodeRepository
 import com.vadimsalavatov.mobiledev.ui.base.BaseViewModel
+import com.vadimsalavatov.mobiledev.ui.emailconfirmation.EmailConfirmationViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
-class SignUpViewModel : BaseViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor() :
+    BaseViewModel() {
 
-    private val _eventChannel = Channel<Event>(Channel.BUFFERED)
-    var formData: SignUpFormData? = null
+    private val _signUpActionStateFlow = Channel<SignUpViewModel.Event>(1)
 
-    fun eventsFlow(): Flow<Event> {
-        return _eventChannel.receiveAsFlow()
+    fun signUpActionFlow(): Flow<SignUpViewModel.Event> {
+        return _signUpActionStateFlow.receiveAsFlow()
     }
+
+    var formData: SignUpFormData? = null
 
     fun signUp(
         firstname: String,
@@ -26,16 +39,22 @@ class SignUpViewModel : BaseViewModel() {
         viewModelScope.launch {
             try {
                 formData = SignUpFormData(firstname, lastname, nickname, email, password)
-                _eventChannel.send(Event.SignUpEmailConfirmationRequired)
-            } catch (error: Exception) {
-                _eventChannel.send(Event.SignUpEmailConfirmationRequired)
+                _signUpActionStateFlow.send(Event.SignUpEmailConfirmationRequired)
+            } catch (error: Throwable) {
+                Timber.e(error)
+                _signUpActionStateFlow.send(Event.SignUpUnknownError(NetworkResponse.UnknownError(error)))
             }
         }
     }
 
     sealed class Event {
-        object SignUpSuccess : Event()
+        object SignUpPending: Event()
         object SignUpEmailConfirmationRequired : Event()
+        data class SignUpServerError(val e: NetworkResponse.ServerError<SendRegistrationVerificationCodeErrorResponse>) :
+            Event()
+
+        data class SignUpUnknownError(val e: NetworkResponse.UnknownError) : Event()
+        data class SignUpNetworkError(val e: NetworkResponse.NetworkError) : Event()
     }
 
     data class SignUpFormData(

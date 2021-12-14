@@ -9,8 +9,10 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
 
+@AndroidEntryPoint
 class MainFragment : BaseFragment(R.layout.fragment_main) {
 
     private val viewBinding by viewBinding(FragmentMainBinding::bind)

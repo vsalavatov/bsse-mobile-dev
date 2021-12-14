@@ -2,6 +2,11 @@ package com.vadimsalavatov.mobiledev.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -16,11 +21,17 @@ import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentOnboardingBinding
 import com.vadimsalavatov.mobiledev.onboardingTextAdapterDelegate
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
 
     private val viewBinding by viewBinding(FragmentOnboardingBinding::bind)
+    private val viewModel: OnboardingViewModel by viewModels()
 
     private var player: ExoPlayer? = null
 
@@ -30,6 +41,7 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
             addMediaItem(MediaItem.fromUri("asset:///onboarding.mp4"))
             repeatMode = Player.REPEAT_MODE_ALL
             prepare()
+            volume = 0f // disable sound by default
         }
     }
 
@@ -50,7 +62,59 @@ class OnboardingFragment : BaseFragment(R.layout.fragment_onboarding) {
         viewBinding.signUpButton.setOnClickListener {
             findNavController().navigate(R.id.action_onboardingFragment_to_signUpFragment)
         }
+        subscribeToVolumeEvents()
+        subscribeToAutoscrollNotifier()
+    }
 
+    private fun Boolean.asFloat(): Float = if (this) 1f else 0f
+
+    private fun setVolumeControlButtonResource(state: Boolean) {
+        if (state) {
+            viewBinding.volumeControlButton.setImageResource(R.drawable.ic_volume_up_white_24dp)
+        } else {
+            viewBinding.volumeControlButton.setImageResource(R.drawable.ic_volume_off_white_24dp)
+        }
+    }
+
+    private fun subscribeToVolumeEvents() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.videoSoundState().collect { state ->
+                    player?.volume = state.asFloat()
+                    setVolumeControlButtonResource(state)
+                }
+            }
+        }
+        viewBinding.volumeControlButton.setOnClickListener {
+            viewModel.toggleVideoSound()
+        }
+    }
+
+    private fun subscribeToAutoscrollNotifier() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.autoscrollFlow.drop(1).collect {
+                        val currentItem = viewBinding.viewPager.currentItem
+                        val totalItems = viewBinding.viewPager.adapter!!.itemCount
+                        viewBinding.viewPager.setCurrentItem((currentItem + 1) % totalItems, true)
+                    }
+                }
+                launch {
+                    viewModel.startAutoscrollNotifier()
+                }
+            }
+        }
+        viewBinding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                viewModel.registerInteraction(System.currentTimeMillis())
+            }
+        })
     }
 
     override fun onResume() {

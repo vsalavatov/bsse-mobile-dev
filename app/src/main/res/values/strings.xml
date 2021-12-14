@@ -29,4 +29,9 @@
     <string name="email_confirmation_code_is_sent_text">Код подтверджения выслан вам на почту</string>
     <string name="email_confirmation_confirm_code_button_text">Подтвердить</string>
     <string name="email_confirmation_open_mail_app_button_text">Открыть почту</string>
+    <string name="error_network_error_text">Ошибка сети</string>
+    <string name="error_server_error_text">Ошибка сервера</string>
+    <string name="error_unknown_error_text">Неизвестная ошибка</string>
+    <string name="email_confirmation_send_code_again_button_text">Выслать код повторно</string>
+    <string name="email_confirmation_send_code_again_hint_template">Подождите %s</string>
 </resources>
