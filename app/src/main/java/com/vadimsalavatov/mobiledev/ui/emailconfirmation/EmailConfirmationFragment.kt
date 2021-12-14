@@ -3,20 +3,23 @@ package com.vadimsalavatov.mobiledev.ui.emailconfirmation
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.activityViewModels
+import androidx.core.text.buildSpannedString
+import androidx.core.text.inSpans
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentEmailConfirmationBinding
 import com.vadimsalavatov.mobiledev.ui.base.BaseFragment
 import com.vadimsalavatov.mobiledev.ui.signup.SignUpViewModel
+import com.vadimsalavatov.mobiledev.util.getSpannedString
 import com.vadimsalavatov.mobiledev.util.showAsToast
 import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.insetter.applyInsetter
@@ -65,6 +68,7 @@ class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmat
         }
         subscribeToFormFields()
         subscribeToEvents()
+        subscribeToSendAgainEvents()
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.sendVerificationCode(signUpForm.email)
@@ -89,13 +93,57 @@ class EmailConfirmationFragment : BaseFragment(R.layout.fragment_email_confirmat
                         EmailConfirmationViewModel.EmailConfirmationActionState.Pending -> {
                             // nothing
                         }
-                        is EmailConfirmationViewModel.EmailConfirmationActionState.NetworkError -> event.e.showAsToast(requireContext())
-                        is EmailConfirmationViewModel.EmailConfirmationActionState.ServerError -> event.e.showAsToast(requireContext())
-                        is EmailConfirmationViewModel.EmailConfirmationActionState.EmailVerificationError -> event.e.showAsToast(requireContext())
-                        is EmailConfirmationViewModel.EmailConfirmationActionState.UnknownError -> event.e.showAsToast(requireContext())
+                        is EmailConfirmationViewModel.EmailConfirmationActionState.NetworkError -> event.e.showAsToast(
+                            requireContext()
+                        )
+                        is EmailConfirmationViewModel.EmailConfirmationActionState.ServerError -> event.e.showAsToast(
+                            requireContext()
+                        )
+                        is EmailConfirmationViewModel.EmailConfirmationActionState.EmailVerificationError -> event.e.showAsToast(
+                            requireContext()
+                        )
+                        is EmailConfirmationViewModel.EmailConfirmationActionState.UnknownError -> event.e.showAsToast(
+                            requireContext()
+                        )
                     }
                 }
             }
         }
     }
+
+    private fun subscribeToSendAgainEvents() {
+        viewBinding.sendCodeAgainButton.setOnClickListener {
+            viewModel.viewModelScope.launch {
+                Toast.makeText(requireContext(), "высылаем код еще раз...", Toast.LENGTH_LONG).show()
+                val signUpForm = signUpViewModel.formData ?: error("sign up form is not filled")
+                viewModel.sendVerificationCode(signUpForm.email)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.timerStateFlow.collect { remainingMs ->
+                    if (remainingMs == 0L) {
+                        viewBinding.sendCodeAgainHintText.visibility = TextView.INVISIBLE
+                        viewBinding.sendCodeAgainButton.isEnabled = true
+                    } else {
+                        viewBinding.sendCodeAgainHintText.visibility = TextView.VISIBLE
+                        viewBinding.sendCodeAgainButton.isEnabled = false
+                        viewBinding.sendCodeAgainHintText.setSendCodeTimerHint(remainingMs / 1000)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun TextView.setSendCodeTimerHint(seconds: Long) {
+        text = resources.getSpannedString(
+            R.string.email_confirmation_send_code_again_hint_template,
+            buildSpannedString {
+                inSpans {
+                    append("%02d:%02d".format(seconds / 60, seconds % 60))
+                }
+            }
+        )
+    }
 }
+

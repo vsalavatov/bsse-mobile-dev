@@ -30,7 +30,7 @@
         <item name="android:paddingBottom">12dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
-        <item name="android:textColor">@color/brand_blue</item>
+        <item name="android:textColor">@color/button_link_color</item>
     </style>
 
     <style name="Widget.MobileDevCourse.CheckBox" parent="Widget.AppCompat.CompoundButton.CheckBox">

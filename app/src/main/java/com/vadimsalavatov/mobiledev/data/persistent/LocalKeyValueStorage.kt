@@ -15,6 +15,12 @@ class LocalKeyValueStorage(
     moshi: Moshi
 ) {
 
+    var onboardingVideoSoundEnabled: Boolean? by JsonDelegate(
+        ONBOARDING_VIDEO_SOUND_STATE,
+        pref,
+        moshi.adapter(Boolean::class.java)
+    )
+
     var authTokens: AuthTokens?
             by JsonDelegate(
                 AUTH_TOKENS,
@@ -49,5 +55,6 @@ class LocalKeyValueStorage(
     companion object {
 
         private const val AUTH_TOKENS = "auth_tokens"
+        private const val ONBOARDING_VIDEO_SOUND_STATE = "onboarding_video_sound_state"
     }
 }

@@ -11,18 +11,14 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.CheckBox
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.text.buildSpannedString
 import androidx.core.text.inSpans
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vadimsalavatov.mobiledev.R
 import com.vadimsalavatov.mobiledev.databinding.FragmentSignUpBinding
@@ -162,7 +158,7 @@ class SignUpFragment : BaseFragment(R.layout.fragment_sign_up) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 Timber.d("sub events")
-                viewModel.signUpActionStateFlow().collect { event ->
+                viewModel.signUpActionFlow().collect { event ->
                     Timber.d("sign up event: $event")
                     when (event) {
                         is SignUpViewModel.Event.SignUpEmailConfirmationRequired -> {
